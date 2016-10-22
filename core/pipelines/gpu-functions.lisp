@@ -145,7 +145,8 @@
         (when *warn-when-cant-test-compile*
           (format t "~% cepl: the function ~s was not found when compiling ~s"
                   (first missing-dependencies) name))
-        (%update-gpu-function-data spec nil nil)))))
+        (%update-gpu-function-data spec nil nil)))
+    spec))
 
 (defmethod %recompile-gpu-function-and-pipelines (key)
   (%recompile-gpu-function-and-pipelines (func-key key)))
@@ -322,6 +323,8 @@
   (cond
     ((and (listp stage-designator) (eq (first stage-designator) 'function))
      (get-stage-key (second stage-designator)))
+    ((typep stage-designator 'gpu-lambda)
+     (glambda->func-spec stage-designator))
     ((symbolp stage-designator)
      (let* ((name stage-designator)
 	    (funcs (gpu-func-specs name)))
